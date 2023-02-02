@@ -11,7 +11,22 @@ const getQueryError = (input) => {
   const result = schema.validate(input);
   return result.error;
 };
+const PASS = process.env.PASS;
+
+const validpassword = (request) => {
+  const { authorization } = request.headers;
+  console.log(authorization);
+  if (!authorization) {
+    return false;
+  }
+  if (authorization !== PASS) return false;
+  return true;
+};
+
 const getUser = (request, response) => {
+  console.log(request.headers);
+  if (!validpassword(request))
+    return response.status(403).json({ message: "unauthorized request" });
   response.send(userData);
 };
 //in this part i learned about routig how to implement it in express
@@ -26,7 +41,8 @@ const searchUserByUUID = (request, response) => {
     response.statusStatus(404);
   }
 };
-
+// how to protect our password we use enviourment variables
+// so that depends on enviourment so they are global variable that can be used by any
 const filterUser = (request, response) => {
   const { gender, age } = request.query;
   const error = getQueryError({ age, gender });
